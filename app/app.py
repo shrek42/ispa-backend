@@ -24,5 +24,7 @@ def create_app(flask_config='development', db_uri=""):
     # blueprints
     from app.views import home
     app.register_blueprint(home.bp)
+    from app.views import auth
+    app.register_blueprint(auth.bp)
 
     return app
