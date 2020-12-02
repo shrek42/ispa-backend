@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  mariadb:
+    image: mariadb:10.5.8
+    container_name: "mariadb"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "apsi"
+      MYSQL_USER: "apsi"
+      MYSQL_USER_HOST: "%"
+      MYSQL_PASSWORD: "apsi"
+    ports:
+      - 3306:3306
+
+  ispabackend:
+    image: shrek42/ipsabackend:0.1
+    container_name: "apsi-backend"
+    environment:
+      FLASK_APP: "run.py"
+      FLASK_CONFIG: "development"
+      DB_USER: "apsi"
+      DB_PASSWORD: "apsi"
+      DB_HOST: "mariadb"
+      DB_DATABASE: "apsi"
+    command:
+      - "flask db init"
+      - "flask db migrate"
+      - "flask db upgrade"
+    ports:
+      - 5000:5000
+    depends_on:
+      - mariadb
