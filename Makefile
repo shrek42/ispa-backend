@@ -11,6 +11,7 @@ setup:
 	pip3 install -e .
 
 tests:
+	- touch tests/test.db
 	coverage run -m pytest --cov-report term-missing --cov app tests/
 
 lint:
@@ -50,5 +51,6 @@ clean:
 	find . -type d -name __pycache__ | xargs rm -rf {}
 	- docker container stop mariadb
 	- docker container rm mariadb
+	- rm tests/test.db
 	- rm -r migrations/
 	- rm -r app.egg* 
