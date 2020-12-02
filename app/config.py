@@ -1,3 +1,6 @@
+import logging
+
+
 class Config:
     """General app configuration."""
     DEBUG = False
@@ -14,13 +17,16 @@ class TestConfig(Config):
     """Test configuration."""
     DEBUG = True
     TESTING = True
-    # database uri here
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SERVER_NAME = "apsibackend"
 
 
 class DevConfig(Config):
     """Development configuration."""
     ENV = "dev"
     DEBUG = True
+
+    logging.basicConfig(level=logging.DEBUG)
 
 
 class ProdConfig(Config):
