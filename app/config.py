@@ -1,3 +1,6 @@
+import logging
+
+
 class Config:
     """General app configuration."""
     DEBUG = False
@@ -21,6 +24,8 @@ class DevConfig(Config):
     """Development configuration."""
     ENV = "dev"
     DEBUG = True
+
+    logging.basicConfig(level=logging.DEBUG)
 
 
 class ProdConfig(Config):
