@@ -27,3 +27,15 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User: {} with email: {}>'.format(self.username, self.email)
+
+
+class Test(db.Model):
+    """Create a user table."""
+    __tablename__ = 'test'
+
+    id = db.Column(db.Integer, primary_key=True)
+    test_type = db.Column(db.Text())
+
+
+    def __repr__(self):
+        return '<Test type: {} '.format(self.test_type)

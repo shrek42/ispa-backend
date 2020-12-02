@@ -29,3 +29,6 @@ def test_register_route(client):
     d = {}
     res = client.post(url_for("auth.register"), data=json.dumps(d), headers=h)
     assert res.status_code == 400
+
+
+

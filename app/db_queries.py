@@ -1,5 +1,5 @@
 from app.app import db
-from app.models import User
+from app.models import User, Test
 
 
 def is_user_exists(email):
@@ -18,3 +18,10 @@ def add_user(email, password):
 
 def get_user():
     pass
+
+
+def add_test(test_type):
+   
+    test = Test(test_type=test_type)
+    db.session.add(test)
+    db.session.commit()
