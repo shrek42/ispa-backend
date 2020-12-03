@@ -1,8 +1,8 @@
-version: "3.8"
+version: "3.3"
 services:
   mariadb:
     image: mariadb:10.5.8
-    container_name: "mariadb"
+    container_name: "mariadb_compose"
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: "apsi"
@@ -18,6 +18,8 @@ services:
     environment:
       FLASK_APP: "run.py"
       FLASK_CONFIG: "development"
+      HOST: "0.0.0.0"
+      PORT: 666
       DB_USER: "apsi"
       DB_PASSWORD: "apsi"
       DB_HOST: "mariadb"
@@ -27,6 +29,6 @@ services:
       - "flask db migrate"
       - "flask db upgrade"
     ports:
-      - 5000:5000
+      - 5000:666
     depends_on:
       - mariadb
