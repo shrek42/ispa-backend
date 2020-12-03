@@ -41,9 +41,11 @@ migrations:
 
 run:
 	export FLASK_APP="run.py" && export FLASK_CONFIG="development" \
+	&& export PORT=5000 \
+	&& export HOST="0.0.0.0" \
 	&& export DB_USER="apsi" \
 	&& export DB_PASSWORD="apsi" \
-	&& export DB_HOST="127.0.01" \
+	&& export DB_HOST="127.0.0.1" \
 	&& export DB_DATABASE="apsi" \
 	&& python3 run.py
 

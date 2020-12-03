@@ -25,5 +25,27 @@ class User(db.Model):
         """Check if hashed password matches actual password."""
         return check_password_hash(self.password_hash, password)
 
+    @classmethod
+    def find_user_in_db(cls, email):
+        return User.query.filter_by(email=email).first()
+
     def __repr__(self):
         return '<User: {} with email: {}>'.format(self.username, self.email)
+
+
+class OldTokenModel(db.Model):
+    """
+    Model for revoked tokens.
+    """
+    __tablename__ = 'old_tokens'
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(120))
+
+    def add(self):
+        db.session.add(self)
+        db.session.commit()
+
+    @classmethod
+    def is_jti_blacklisted(cls, jti):
+        query = cls.query.filter_by(jti=jti).first()
+        return bool(query)
