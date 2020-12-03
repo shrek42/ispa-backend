@@ -33,7 +33,7 @@ def login():
         pass
 
 
-@bp.route("/addtest", methods=["POST"])
+@bp.route("/dashboard/test/add", methods=["POST"])
 def test():
     if request.method == "POST":
         request_json = request.get_json()
