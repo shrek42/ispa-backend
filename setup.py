@@ -10,6 +10,7 @@ setup(
         "Flask",
         "Flask-Migrate",
         "Flask-SQLAlchemy",
+        "flask-jwt-extended",
         "PyMySQL",
         "pytest",
         "pytest-cov",
