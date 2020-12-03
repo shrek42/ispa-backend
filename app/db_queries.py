@@ -1,5 +1,5 @@
 from app.app import db
-from app.models import User
+from app.models import User, Test
 
 
 def check_user_credentials(email, password):
@@ -24,4 +24,14 @@ def add_user(email, password):
         raise ValueError('This username is already in use!')
     user = User(email=email, password=password)
     db.session.add(user)
+    db.session.commit()
+
+    
+def get_user():
+    pass
+
+
+def add_test(test_type):
+    test = Test(test_type=test_type)
+    db.session.add(test)
     db.session.commit()

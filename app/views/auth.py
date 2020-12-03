@@ -1,11 +1,16 @@
 import logging
 
-import app.db_queries as db_query
 from app import jwt
 from flask import Blueprint, jsonify, request, abort
+
+from app.db_queries import add_user, add_test
+
+import app.db_queries as db_query
+
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, jwt_refresh_token_required,
                                 get_jwt_identity, get_raw_jwt)
+
 
 bp = Blueprint("auth", __name__)
 
@@ -84,3 +89,21 @@ def login():
     except Exception as ex:
         # TODO: REPAIR ALL EXEPTION HANDLERS
         return jsonify(ex), 403
+
+      
+@bp.route("/dashboard/test/add", methods=["POST"])
+def test():
+    if request.method == "POST":
+        request_json = request.get_json()
+        test_type = request_json.get("test_type")
+        logging.debug("test_type: %s", test_type)
+
+        if test_type is None:
+            return jsonify(), 400
+
+        try:
+            add_test(test_type)
+        except ValueError:
+            return jsonify(), 400
+
+        return jsonify(), 201
