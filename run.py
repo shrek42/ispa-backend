@@ -1,7 +1,6 @@
 import os
 from app.app import create_app
-from flask_jwt_extended import JWTManager
-
+from app import jwt
 
 flask_config = os.getenv("FLASK_CONFIG")
 app_host = os.getenv("HOST")
@@ -17,7 +16,14 @@ db_uri = "mysql+pymysql://{}:{}@{}/{}".format(
             host,
             database)
 app = create_app(flask_config, db_uri)
-jwt = JWTManager(app)
+jwt.init_jwt(app)
+
+
+@jwt.jwt.token_in_blacklist_loader
+def check_if_token_in_blacklist(decrypted_token):
+    jti = decrypted_token['jti']
+    return jwt.jwt.check_black_listed_jti(jti)
+
 
 if __name__ == "__main__":
     app.run(host=app_host, port=app_port)

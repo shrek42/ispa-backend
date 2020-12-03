@@ -1,6 +1,7 @@
 import logging
 
 import app.db_queries as db_query
+from app import jwt
 from flask import Blueprint, jsonify, request, abort
 from flask_jwt_extended import (create_access_token, create_refresh_token,
                                 jwt_required, jwt_refresh_token_required,
@@ -11,39 +12,44 @@ bp = Blueprint("auth", __name__)
 
 @bp.route("/register", methods=["POST"])
 def register():
-    if request.method == "POST":
-        request_json = request.get_json()
-        email = request_json.get("email")
-        password = request_json.get("password")
+    request_json = request.get_json()
+    email = request_json.get("email", "")
+    password = request_json.get("password", "")
+    if email and password:
         logging.debug("email: %s password: %s", email, password)
+    else:
+        abort(400, description={"message": "Bad Request"})
 
-        if email is None or password is None:
-            abort(400, description={"message": "Bad Request"})
+    try:
+        db_query.add_user(email, password)
+        access_token = create_access_token(identity=email)
+        refresh_token = create_refresh_token(identity=email)
+    except ValueError:
+        abort(400, description={"message": "This e-mail exist in Db"})
 
-        try:
-            db_query.add_user(email, password)
-            access_token = create_access_token(identity=email)
-            refresh_token = create_access_token(identity=email)
-        except ValueError:
-            abort(400, description={"message": "This e-mail exist in Db"})
-        return jsonify({
-                "access_token": access_token, "refresh_token": refresh_token},
-                code=201)
+    return jsonify({
+        "access_token": access_token, "refresh_token": refresh_token}), 201
 
 
 @bp.route("/logout_access", methods=["POST"])
+@jwt_required
 def logout_ac():
     jti = get_raw_jwt()["jti"]
     try:
-        db_query.delete_jti(jti)
-    except Exception as ex:
-        jsonify(ex, code=500)
+        jwt.delete_jti(jti)
+    except Exception:
+        abort(400, description={"message": "Bad AccessToken"})
     return jsonify("Logged out")
 
 
 @bp.route("/logout_refresh", methods=["POST"])
-@jwt_required
+@jwt_refresh_token_required
 def logout_ref():
+    jti = get_raw_jwt()["jti"]
+    try:
+        jwt.delete_jti(jti)
+    except Exception:
+        abort(400, description={"message": "Bad AccessToken"})
     return jsonify("Logged out")
 
 
@@ -64,15 +70,17 @@ def return_all_users():
 
 @bp.route("/login", methods=["POST"])
 def login():
-    email = request.args.get("email", "")
-    password = request.args.get("password", "")
+    request_json = request.get_json()
+    email = request_json.get("email", "")
+    password = request_json.get("password", "")
+    if not password or not email:
+        return jsonify("Password or email is not correct"), 403
     try:
         db_query.check_user_credentials(email, password)
         access_token = create_access_token(identity=email)
-        refresh_token = create_access_token(identity=email)
+        refresh_token = create_refresh_token(identity=email)
         return jsonify({
-             "access_token": access_token, "refresh_token": refresh_token},
-             code=200)
+            "access_token": access_token, "refresh_token": refresh_token}), 200
     except Exception as ex:
-        return jsonify(ex, code=403)
-    
+        # TODO: REPAIR ALL EXEPTION HANDLERS
+        return jsonify(ex), 403
