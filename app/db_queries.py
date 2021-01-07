@@ -1,5 +1,4 @@
 from app.app import db
-<<<<<<< HEAD
 from app.models import User, Test, Result, Specification
 
 
@@ -34,7 +33,6 @@ def add_test(test_type):
     db.session.commit()
 
     
-
 def add_test_result(datetime, result):
     test_result = Result(timestamp = datetime, status = result)
     db.session.add(test_result)
