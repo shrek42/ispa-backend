@@ -2,7 +2,6 @@ from app.app import db
 from app.models import User, Test, Result, Specification
 
 
-
 def check_user_credentials(email, password):
     current_user = User.find_user_in_db(email)
     if not current_user:

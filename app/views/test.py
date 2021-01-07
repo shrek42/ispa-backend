@@ -43,7 +43,7 @@ def test():
 
         try:
             db_query.add_test(test_type)
-        except ValueError:
+        except:
             return jsonify(), 400
 
         return jsonify(), 201
@@ -59,7 +59,7 @@ def spec_add():
     paramStr3 = request_json.get("paramStr3", "")
     try:
         db_query.spec_add(spec_name, int(paramInt1), paramStr2, paramStr3)
-    except ValueError:
+    except:
         abort(400, description={"message": "spec with this name exist in db"})
     return jsonify({"msg": "success"})
 
