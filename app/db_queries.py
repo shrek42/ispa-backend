@@ -1,5 +1,7 @@
 from app.app import db
-from app.models import User, Test, TestResult
+<<<<<<< HEAD
+from app.models import User, Test, Result, Specification
+
 
 
 def check_user_credentials(email, password):
@@ -26,40 +28,34 @@ def add_user(email, password):
     db.session.add(user)
     db.session.commit()
 
-    
-def get_user():
-    pass
-
-
 def add_test(test_type):
     test = Test(test_type=test_type)
     db.session.add(test)
     db.session.commit()
-    
-    
-def get_test_result():
-     specs = TestResult.query.all()
-     return specs
-    
-# def get_test_result(test_id):
-#     test_result = TestResult.find_test_result(test_id)
-#     print (test_result)
-#     if not test_result:
-#         raise Exception('This test does not exist in DB!')
-#     else:
-#         def to_json(x):
-#             return {
-#                 "test result": x.test_result
-#                 }
-        
-#     return list(map(lambda x: to_json(x), test_result))
 
+    
 
 def add_test_result(datetime, result):
-    test_result = TestResult(test_date = datetime, test_result = result)
+    test_result = Result(timestamp = datetime, status = result)
     db.session.add(test_result)
     db.session.commit()
     
     
+      
+def get_test_result():
+     results = Result.query.all()
+     return results  
     
-    
+
+
+def spec_add(spec_name, paramInt1, paramStr2, paramStr3):
+    spec = Specification(spec_name=spec_name, paramInt1=paramInt1,
+            paramStr2=paramStr2, paramStr3=paramStr3)
+    db.session.add(spec)
+    db.session.commit()
+
+
+def spec_all_show():
+    specs = Specification.query.all()
+    return specs
+
