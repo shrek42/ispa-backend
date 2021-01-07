@@ -30,4 +30,6 @@ def create_app(flask_config='development', db_uri=""):
     app.register_blueprint(home.bp)
     from app.views import auth
     app.register_blueprint(auth.bp)
+    from app.views import test
+    app.register_blueprint(test.bp)
     return app
