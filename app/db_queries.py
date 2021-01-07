@@ -1,5 +1,6 @@
 from app.app import db
-from app.models import User, Test, Specification
+from app.models import User, Test, Result, Specification
+
 
 
 def check_user_credentials(email, password):
@@ -31,6 +32,19 @@ def add_test(test_type):
     db.session.add(test)
     db.session.commit()
 
+    
+def add_test_result(datetime, result):
+    test_result = Result(timestamp = datetime, status = result)
+    db.session.add(test_result)
+    db.session.commit()
+    
+    
+      
+def get_test_result():
+     results = Result.query.all()
+     return results  
+    
+
 
 def spec_add(spec_name, paramInt1, paramStr2, paramStr3):
     spec = Specification(spec_name=spec_name, paramInt1=paramInt1,
@@ -42,3 +56,4 @@ def spec_add(spec_name, paramInt1, paramStr2, paramStr3):
 def spec_all_show():
     specs = Specification.query.all()
     return specs
+

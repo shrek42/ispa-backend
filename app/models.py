@@ -34,7 +34,7 @@ class User(db.Model):
 
 
 class Test(db.Model):
-    """Create a user table."""
+    """Create a test table."""
     __tablename__ = 'test'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -45,6 +45,12 @@ class Test(db.Model):
     update_date = db.Column(db.DateTime())
     last_run = db.Column(db.DateTime())
     data = db.Column(db.Text())
+
+
+
+    def __repr__(self):
+        return '<Test type: {} '.format(self.test_type)
+    
 
 
 class Specification(db.Model):
@@ -58,14 +64,15 @@ class Specification(db.Model):
     paramStr3 = db.Column(db.String(60))
 
 
-# class Result(db.Model):
-#     """Create a user table."""
-#     __tablename__ = 'result'
-# 
-#     id = db.Column(db.Integer, primary_key=True)
-#     status = db.Column(db.String(60))
-#     timestamp = db.Column(db.DateTime())
-# 
+
+class Result(db.Model):
+    """Create a user table."""
+    __tablename__ = 'result'
+
+    id = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.String(60))
+    timestamp = db.Column(db.DateTime())
+
 
 class OldTokenModel(db.Model):
     """

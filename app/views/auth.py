@@ -91,19 +91,3 @@ def login():
         return jsonify(ex), 403
 
       
-@bp.route("/dashboard/test/add", methods=["POST"])
-def test():
-    if request.method == "POST":
-        request_json = request.get_json()
-        test_type = request_json.get("test_type")
-        logging.debug("test_type: %s", test_type)
-
-        if test_type is None:
-            return jsonify(), 400
-
-        try:
-            add_test(test_type)
-        except ValueError:
-            return jsonify(), 400
-
-        return jsonify(), 201
