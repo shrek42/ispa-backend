@@ -34,7 +34,7 @@ class User(db.Model):
 
 
 class Test(db.Model):
-    """Create a user table."""
+    """Create a test table."""
     __tablename__ = 'test'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -43,6 +43,20 @@ class Test(db.Model):
 
     def __repr__(self):
         return '<Test type: {} '.format(self.test_type)
+    
+class TestResult(db.Model):
+    """Create a test results table."""
+    __tablename__ = 'test_result'
+
+    id = db.Column(db.Integer, primary_key=True)
+    test_date = db.Column(db.DateTime())
+    test_result = db.Column(db.Text())
+    
+    def find_test_result(test_id):
+        return TestResult.query.filter(id==test_id)
+        
+    def __repr__(self):
+        return '<Test date: {}, result {}'.format(self.test_date, self.test_result)
 
 
 class OldTokenModel(db.Model):

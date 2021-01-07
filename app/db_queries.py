@@ -1,5 +1,5 @@
 from app.app import db
-from app.models import User, Test
+from app.models import User, Test, TestResult
 
 
 def check_user_credentials(email, password):
@@ -35,3 +35,31 @@ def add_test(test_type):
     test = Test(test_type=test_type)
     db.session.add(test)
     db.session.commit()
+    
+    
+def get_test_result():
+     specs = TestResult.query.all()
+     return specs
+    
+# def get_test_result(test_id):
+#     test_result = TestResult.find_test_result(test_id)
+#     print (test_result)
+#     if not test_result:
+#         raise Exception('This test does not exist in DB!')
+#     else:
+#         def to_json(x):
+#             return {
+#                 "test result": x.test_result
+#                 }
+        
+#     return list(map(lambda x: to_json(x), test_result))
+
+
+def add_test_result(datetime, result):
+    test_result = TestResult(test_date = datetime, test_result = result)
+    db.session.add(test_result)
+    db.session.commit()
+    
+    
+    
+    

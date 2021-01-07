@@ -107,3 +107,42 @@ def test():
             return jsonify(), 400
 
         return jsonify(), 201
+    
+    
+# @bp.route("/dashboard/test/results", methods=["POST"])
+# def test_result():
+#     if request.method == "POST":
+#         request_json = request.get_json()
+#         test_id = request_json.get("test_id")
+#         logging.debug("test_id: %s", test_id)
+
+#         if test_id is None:
+#             return jsonify(), 400
+
+#         try:
+#             data = db_query.get_test_result(test_id)
+#             result = [row2dict(x) for x in data]
+#         except ValueError:
+#             return jsonify(), 400
+
+#         return jsonify(result), 201
+    
+    
+    
+    
+@bp.route("/dashboard/test/results", methods=["GET"])
+def test_result():
+   
+        
+       data = db_query.get_test_result()
+       result = [row2dict(x) for x in data]
+       
+
+       return jsonify(result), 201    
+
+
+def row2dict(row):
+     d = {}
+     for column in row.__table__.columns:
+         d[column.name] = str(getattr(row, column.name))
+     return d
