@@ -40,5 +40,5 @@ def spec_add(spec_name, paramInt1, paramStr2, paramStr3):
 
 
 def spec_all_show():
-    specs = Spec.query.all()
+    specs = Specification.query.all()
     return specs
