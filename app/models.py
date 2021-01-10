@@ -33,24 +33,29 @@ class User(db.Model):
         return '<User: {} with email: {}>'.format(self.username, self.email)
 
 
+class Scenario(db.Model):
+    __tablename__ = 'scenario'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(60), index=True, unique=True)
+    description = db.Column(db.Text())
+    creation_date = db.Column(db.DateTime())
+    update_date = db.Column(db.DateTime())
+    last_run = db.Column(db.DateTime())
+    test = db.relationship("Test")
+
+
 class Test(db.Model):
     """Create a test table."""
     __tablename__ = 'test'
 
     id = db.Column(db.Integer, primary_key=True)
-    test_name = db.Column(db.String(60), index=True, unique=True)
+    name = db.Column(db.String(60), index=True, unique=True)
     test_type = db.Column(db.String(60))
-    description = db.Column(db.Text())
-    creation_date = db.Column(db.DateTime())
-    update_date = db.Column(db.DateTime())
-    last_run = db.Column(db.DateTime())
     data = db.Column(db.Text())
-
-
-
-    def __repr__(self):
-        return '<Test type: {} '.format(self.test_type)
-    
+    execute_date = db.Column(db.DateTime())
+    scenario_id = db.Column(db.Integer, db.ForeignKey('scenario.id'))
+    specification_id = db.Column(db.Integer, db.ForeignKey('specification.id'))
+    result = db.relationship("Result")
 
 
 class Specification(db.Model):
@@ -62,7 +67,7 @@ class Specification(db.Model):
     paramInt1 = db.Column(db.Integer)
     paramStr2 = db.Column(db.String(60))
     paramStr3 = db.Column(db.String(60))
-
+    test = db.relationship('Test')
 
 
 class Result(db.Model):
@@ -72,6 +77,7 @@ class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String(60))
     timestamp = db.Column(db.DateTime())
+    test_id = db.Column(db.Integer, db.ForeignKey('test.id'))
 
 
 class OldTokenModel(db.Model):
