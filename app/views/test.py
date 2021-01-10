@@ -51,9 +51,6 @@ def scenario_all():
 
 @bp.route('/dashboard/test/add', methods=['POST'])
 def test_add():
-    specifications = db_query.spec_all_show()
-    scenarios = db_query.scenario_all_show()
-
     request_json = request.get_json()
     name = request_json.get("name", "")
     test_type = request_json.get("test_type", "")
@@ -61,22 +58,9 @@ def test_add():
     execute_date = request_json.get("execute_date", None)
     scenario_name = request_json.get("scenario_name", "")
     spec_name = request_json.get("spec_name", "")
-    
-    spec_id = None
-    scenario_id = None
-    for x in specifications:
-        if x["spec_name"] == spec_name:
-            spec_id = x["id"]
-    for x in scenarios:
-        if x["name"] == scenario_name:
-            scenario_id = x["id"]
-            
-    if spec_id is None or scenario_id is None:
-        abort(400, description={"message": "scenario or spec doesnt exist in db"})
 
     try:
-        db_query.test_add(name, description, creation_date, update_date,
-                last_run)
+        db_query.test_add(name, test_type, data, execute_date, spec_name, scenario_name)
     except:
         abort(400, description={"message": "test with this name exist in db"})
     return jsonify({"msg": "success"})
@@ -104,9 +88,7 @@ def test_all():
 @bp.route('/dashboard/results/show', methods=['GET'])
 def results():
     data = db_query.get_test_result()
-    result = [row2dict(x) for x in data]
-       
-    return jsonify(result), 201  
+    return jsonify(data), 201  
 
 
 def row2dict(row):

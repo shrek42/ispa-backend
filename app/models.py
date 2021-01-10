@@ -55,7 +55,6 @@ class Test(db.Model):
     execute_date = db.Column(db.DateTime())
     scenario_id = db.Column(db.Integer, db.ForeignKey('scenario.id'))
     specification_id = db.Column(db.Integer, db.ForeignKey('specification.id'))
-    specification = db.relationship("Specification", back_populates='child')
     result = db.relationship("Result")
 
 
@@ -68,7 +67,7 @@ class Specification(db.Model):
     paramInt1 = db.Column(db.Integer)
     paramStr2 = db.Column(db.String(60))
     paramStr3 = db.Column(db.String(60))
-    test = db.relationship('Test', uselist=False, back_populates="parent")
+    test = db.relationship('Test')
 
 
 class Result(db.Model):

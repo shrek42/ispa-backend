@@ -3,7 +3,7 @@ import logging
 from app import jwt
 from flask import Blueprint, jsonify, request, abort
 
-from app.db_queries import add_user, add_test
+from app.db_queries import add_user
 
 import app.db_queries as db_query
 
