@@ -64,3 +64,6 @@ curl -i -XPOST 127.0.0.1:5000/dashboard/test/run \
     -d '{"name": "test1"}' # "timestamp": "2020-06-06 12:00:00"}',
 # check all results again
 curl -i -XGET 127.0.0.1:5000/dashboard/results/show
+
+# summary
+curl -i -XGET 127.0.0.1:5000/dashboard/test/show/all
