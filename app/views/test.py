@@ -78,6 +78,12 @@ def test_run():
     return jsonify({"msg": "success"})
 
 
+@bp.route('/dashboard/test/show/all', methods=['GET'])
+def test_all_all():
+    data = db_query.return_all_all()
+    return jsonify(data)
+
+
 @bp.route('/dashboard/test/show', methods=['GET'])
 def test_all():
     data = db_query.test_all_show()

@@ -124,3 +124,36 @@ def get_test_result():
             if x["test_id"] == y["id"]:
                 data.append({"test_name": y["name"], "result": x["status"], "timestamp": x["timestamp"]})
     return data
+
+
+def return_all_all():
+    tests = [row2dict(x) for x in Test.query.all()]
+    scenarios = [row2dict(x) for x in Scenario.query.all()]
+    specs = [row2dict(x) for x in Specification.query.all()]
+    result = [row2dict(x) for x in result_all_show()]
+    data = []
+    for t in tests:
+        dictr = {
+            "name": t["name"],
+            "test_type": t["test_type"],
+            "data": t["data"],
+            "execute_date": t["execute_date"]}
+        for sc in scenarios:
+            if t['scenario_id'] == sc['id']:
+                dictr['name'] = sc['name']
+                dictr['last_run'] = sc['last_run']
+                dictr['update_date'] = sc['update_date']
+                dictr['description'] = sc['description']
+                dictr['creation_date'] = sc['creation_date']
+        for s in specs:
+            if t['specification_id'] == s['id']:
+                dictr['paramInt1'] = s['paramInt1']
+                dictr['paramStr2'] = s['paramStr2']
+                dictr['paramStr3'] = s['paramStr3']
+                dictr['spec_name'] = s['spec_name']
+        for r in result:
+            if t["id"] == r["test_id"]:
+                dictr["result"] = r["status"]
+                dictr["timestamp"] = r["timestamp"]
+        data.append(dictr)
+    return data
