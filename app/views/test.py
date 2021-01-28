@@ -73,7 +73,19 @@ def group_add():
     try:
         db_query.group_add(name, test_name, spec_name)
     except:
-        abort(400, description={"message": "test with this name exist in db"})
+        abort(400, description={"message": "sth went wrong"})
+    return jsonify({"msg": "success"})
+
+
+@bp.route('/dashboard/group/run', methods=['POST'])
+def group_add():
+    request_json = request.get_json()
+    name = request_json.get("name", "")
+
+    try:
+        db_query.group_run(name)
+    except:
+        abort(400, description={"message": "sth went wrong"})
     return jsonify({"msg": "success"})
 
 
