@@ -1,7 +1,9 @@
 import datetime 
 
+from random import randint
+
 from app.app import db
-from app.models import User, Test, Result, Specification, Scenario
+from app.models import User, Test, Result, Specification, Scenario, Group
 
 
 def row2dict(row):
@@ -36,9 +38,8 @@ def add_user(email, password):
     db.session.commit()
 
 
-def spec_add(spec_name, paramInt1, paramStr2, paramStr3):
-    spec = Specification(spec_name=spec_name, paramInt1=paramInt1,
-            paramStr2=paramStr2, paramStr3=paramStr3)
+def spec_add(spec_name, url):
+    spec = Specification(spec_name=spec_name, url=url)
     db.session.add(spec)
     db.session.commit()
 
@@ -61,22 +62,21 @@ def scenario_all_show():
     return scenarios
 
 
-def test_add(name, test_type, data, execute_date, spec_name, scenario_name):
-    specs = [row2dict(x) for x in spec_all_show()]
+def test_add(name, test_type, execute_date, scenario_name, data):
     scenarios = [row2dict(x) for x in scenario_all_show()]
-    spec_id = None
     scenario_id = None
-    for x in specs:
-        if x["spec_name"] == spec_name:
-            spec_id = x["id"]
+  #   for x in specs:
+  #       if x["spec_name"] == spec_name:
+  #           spec_id = x["id"]
     for x in scenarios:
         if x["name"] == scenario_name:
             scenario_id = x["id"]
             
-    if spec_id is None or scenario_id is None:
+    if scenario_id is None:
         raise ValueError
 
-    test = Test(name=name, test_type=test_type, data=data, execute_date=execute_date, specification_id=spec_id, scenario_id=scenario_id)
+    test = Test(name=name, test_type=test_type, execute_date=execute_date,
+            scenario_id=scenario_id, data=data)
     db.session.add(test)
     db.session.commit()
 
@@ -86,7 +86,44 @@ def test_all_show():
     return tests
 
 
-def test_run(name, timestamp):
+def group_add(name, test_name, spec_name):
+    tests = [row2dict(x) for x in Test.query.all()]
+    specs = [row2dict(x) for x in Specification.query.all()]
+    test_id = None
+    spec_id = None
+    for x in specs:
+        if x["spec_name"] == spec_name:
+            spec_id = x["id"]
+    for x in tests:
+        if x["name"] == test_name:
+            test_id = x["id"]
+            
+    if test_id is None or spec_id is None:
+        raise ValueError
+    
+    group = Group(name=name, test_id=test_id, spec_id=spec_id)
+    db.session.add(group)
+    db.session.commit()
+
+
+def group_all_show():
+    groups = [row2dict(x) for x in Group.query.all()]
+    tests = [row2dict(x) for x in Test.query.all()]
+    specs = [row2dict(x) for x in Specification.query.all()]
+    data = []
+    for g in groups:
+        dictr = {"name": g["name"]}
+        for t in tests:
+            if t['id'] == g["test_id"]:
+                dictr["test_name"] = t["name"]
+        for s in specs:
+            if g['spec_id'] == s['id']:
+                dictr['spec_name'] = s['spec_name']
+        data.append(dictr)
+    return groups
+
+
+def test_run(name, timestamp, spec_name):
     # ts = datetime.strptime(timestamp, '%b %d %Y %I:%M%p')
     now = datetime.datetime.now()
     ts = now
@@ -97,15 +134,16 @@ def test_run(name, timestamp):
     for x in tests:
         if x["name"] == name:
             test_id = x["id"]
-            if x["data"] == "":
-                status = "failed"
-            else:
-                status = "passed"
+        if x["data"] != "":
+            status = "passed"
+        else:
+            status = "failed"
 
     if test_id is None:
         raise ValueError
-
-    res = Result(status=status, timestamp=ts, test_id=test_id)
+    
+    ms = randint(25, 100)
+    res = Result(status=status, timestamp=ts, test_id=test_id, spec_name=spec_name, time=ms)
     db.session.add(res)
     db.session.commit()
 
@@ -122,14 +160,16 @@ def get_test_result():
     for x in result:
         for y in tests:
             if x["test_id"] == y["id"]:
-                data.append({"test_name": y["name"], "result": x["status"], "timestamp": x["timestamp"]})
+                data.append({"test_name": y["name"], "result": x["status"],
+                    "timestamp": x["timestamp"], "spec_name": x["spec_name"],
+                    "duration_time": x["time"]})
     return data
 
 
 def return_all_all():
     tests = [row2dict(x) for x in Test.query.all()]
     scenarios = [row2dict(x) for x in Scenario.query.all()]
-    specs = [row2dict(x) for x in Specification.query.all()]
+  #  specs = [row2dict(x) for x in Specification.query.all()]
     result = [row2dict(x) for x in result_all_show()]
     data = []
     for t in tests:
@@ -145,15 +185,34 @@ def return_all_all():
                 dictr['update_date'] = sc['update_date']
                 dictr['description'] = sc['description']
                 dictr['creation_date'] = sc['creation_date']
-        for s in specs:
-            if t['specification_id'] == s['id']:
-                dictr['paramInt1'] = s['paramInt1']
-                dictr['paramStr2'] = s['paramStr2']
-                dictr['paramStr3'] = s['paramStr3']
-                dictr['spec_name'] = s['spec_name']
+  #      for s in specs:
+  #          if t['specification_id'] == s['id']:
+  #              dictr['url'] = s['url']
+  #              dictr['spec_name'] = s['spec_name']
         for r in result:
             if t["id"] == r["test_id"]:
                 dictr["result"] = r["status"]
                 dictr["timestamp"] = r["timestamp"]
         data.append(dictr)
     return data
+
+
+def avg_show(test_name):
+    result = [row2dict(x) for x in result_all_show()]
+    tests = [row2dict(x) for x in test_all_show()]
+    data = []
+    for r in result:
+        for t in tests:
+            if r["test_id"] == t["id"]:
+                if t["name"] == test_name:
+                    data.append({str(r["spec_name"]): int(r["time"])})
+    from collections import defaultdict
+    intermediate = defaultdict(list)
+    for subdict in data:
+        for key, value in subdict.items():
+            intermediate[key].append(value)
+    print(intermediate)
+    out = []
+    for key, value in intermediate.items():
+        out.append({key: sum(value)/len(value)})
+    return out 

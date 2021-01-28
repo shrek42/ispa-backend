@@ -54,8 +54,17 @@ class Test(db.Model):
     data = db.Column(db.Text())
     execute_date = db.Column(db.DateTime())
     scenario_id = db.Column(db.Integer, db.ForeignKey('scenario.id'))
-    specification_id = db.Column(db.Integer, db.ForeignKey('specification.id'))
     result = db.relationship("Result")
+    group = db.relationship('Group')
+
+class Group(db.Model):
+    """Create a test table."""
+    __tablename__ = 'group'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(60), index=True)
+    spec_id = db.Column(db.Integer, db.ForeignKey('specification.id'))
+    test_id = db.Column(db.Integer, db.ForeignKey('test.id'))
 
 
 class Specification(db.Model):
@@ -64,10 +73,8 @@ class Specification(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     spec_name = db.Column(db.String(60), index=True, unique=True)
-    paramInt1 = db.Column(db.Integer)
-    paramStr2 = db.Column(db.String(60))
-    paramStr3 = db.Column(db.String(60))
-    test = db.relationship('Test')
+    url = db.Column(db.Text())
+    group = db.relationship('Group')
 
 
 class Result(db.Model):
@@ -77,6 +84,8 @@ class Result(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     status = db.Column(db.String(60))
     timestamp = db.Column(db.DateTime())
+    spec_name = db.Column(db.String(60))
+    time = db.Column(db.Integer)
     test_id = db.Column(db.Integer, db.ForeignKey('test.id'))
 
 
