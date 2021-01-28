@@ -216,3 +216,23 @@ def avg_show(test_name):
     for key, value in intermediate.items():
         out.append({key: sum(value)/len(value)})
     return out 
+
+
+def group_run(name):
+    groups = [row2dict(x) for x in Group.query.all()]
+    tests = [row2dict(x) for x in Test.query.all()]
+    specs = [row2dict(x) for x in Specification.query.all()]
+    data = []
+    for g in groups:
+        dictr = {"name": g["name"]}
+        for t in tests:
+            if t['id'] == g["test_id"]:
+                dictr["test_name"] = t["name"]
+        for s in specs:
+            if g['spec_id'] == s['id']:
+                dictr['spec_name'] = s['spec_name']
+        data.append(dictr)
+    
+    for d in data:
+        if d["name"] == name:
+            test_run(d["test_name"], 0, d["spec_name"])
