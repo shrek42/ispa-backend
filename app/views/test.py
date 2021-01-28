@@ -78,7 +78,7 @@ def group_add():
 
 
 @bp.route('/dashboard/group/run', methods=['POST'])
-def group_add():
+def group_run():
     request_json = request.get_json()
     name = request_json.get("name", "")
 
